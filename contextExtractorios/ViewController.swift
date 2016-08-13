@@ -39,11 +39,11 @@ class ViewController: UIViewController, MEMELibDelegate, CBCentralManagerDelegat
     
     // ファイル管理系
     let documentsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
-    let rateFile = "rate.txt"
-    let rriFile = "rri.txt"
-    let placeFile = "place.txt"
-    let taionFile = "taion.txt"
-    let memeFile = "meme.txt"
+    let rateFile = "rate.json"
+    let rriFile = "rri.json"
+    let placeFile = "place.json"
+    let taionFile = "taion.json"
+    let memeFile = "meme.json"
     
     let formatter = NSDateFormatter()
     let formatterDate = NSDateFormatter()
@@ -52,7 +52,6 @@ class ViewController: UIViewController, MEMELibDelegate, CBCentralManagerDelegat
     var currentDate : String!
     
     var beforeMemeTime : String = "meme";
-    
     
     var latitude : String!
     var longitude : String!
@@ -79,8 +78,8 @@ class ViewController: UIViewController, MEMELibDelegate, CBCentralManagerDelegat
             locationManager.startUpdatingLocation()
             locationManager.allowsBackgroundLocationUpdates = true
         }
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        formatterDate.dateFormat = "yyyy_MMdd"
+        formatter.dateFormat = "HH:mm:ss"
+        formatterDate.dateFormat = "yyyyMMdd"
         
         // セントラルマネージャ初期化
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
@@ -116,14 +115,13 @@ class ViewController: UIViewController, MEMELibDelegate, CBCentralManagerDelegat
         memeLabel.text = "\(data.blinkStrength)"
         let memeOutput = NSOutputStream(toFileAtPath: documentsPath + "/" + memeDate + "_" + memeFile, append: true)
         memeOutput?.open()
-        let text = "[\"\(memeTime)\", \(data.accZ),\(data.accY),\(data.accX),\(data.yaw),\(data.pitch),\(data.roll),\(data.blinkStrength),\(data.blinkSpeed),\(data.eyeMoveRight),\(data.eyeMoveLeft),\(data.eyeMoveDown),\(data.eyeMoveUp),\(data.powerLeft),\(data.isWalking),\(data.fitError), ],\r\n "
+        let text = "[\"\(memeTime)\", \(data.accZ),\(data.accY),\(data.accX),\(data.yaw),\(data.pitch),\(data.roll),\(data.blinkStrength),\(data.blinkSpeed),\(data.eyeMoveRight),\(data.eyeMoveLeft),\(data.eyeMoveDown),\(data.eyeMoveUp),\(data.powerLeft),\(data.isWalking),\(data.fitError)],\r\n "
         let cstring = text.cStringUsingEncoding(NSUTF8StringEncoding)
         let bytes = UnsafePointer<UInt8>(cstring!)
         let size = text.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
         memeOutput?.write(bytes, maxLength: size)
         memeOutput?.close()
             
-//        beforeMemeTime = memeTime
     }
     
     // セントラルマネージャの状態が変化すると呼ばれる
@@ -359,8 +357,6 @@ class ViewController: UIViewController, MEMELibDelegate, CBCentralManagerDelegat
         }
     }
 
-    
-       
     func toBinary(value: Int) -> String {
         let str = String(value, radix:2)
         let size = 8
